@@ -5,7 +5,7 @@ function Admin() {
   const [bookings, setBookings] = useState([]);
 
   const fetchBookings = async () => {
-    const res = await fetch("http://127.0.0.1:8000/admin/bookings");
+    const res = await fetch("/admin/bookings");
     const data = await res.json();
     setBookings(data);
   };
@@ -13,7 +13,7 @@ function Admin() {
   const deleteBooking = async (id) => {
     if (!window.confirm("Are you sure you want to delete this booking?")) return;
 
-    await fetch(`http://127.0.0.1:8000/admin/bookings/${id}`, {
+    await fetch(`/admin/bookings/${id}`, {
       method: "DELETE"
     });
 
