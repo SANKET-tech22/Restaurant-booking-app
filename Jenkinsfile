@@ -3,51 +3,29 @@ pipeline {
 
     stages {
 
-        stage('Clone Repository') {
+        stage('Clone Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/SANKET-tech22/Restaurant-booking-app.git'
-            }
-        }
-
-        stage('Verify Docker Installation') {
-            steps {
-                sh 'docker --version'
-                sh 'docker-compose --version'
-            }
-        }
-
-        stage('Stop Existing Containers') {
-            steps {
-                sh 'docker-compose down || true'
+                git 'https://github.com/SANKET-tech22/Restaurant-booking-app.git'
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker-compose build --no-cache'
+                sh 'docker compose build'
             }
         }
 
-        stage('Deploy Containers') {
+        stage('Run Containers') {
             steps {
-                sh 'docker-compose up -d'
+                sh 'docker compose up -d'
             }
         }
 
-        stage('Verify Deployment') {
+        stage('Check Running Containers') {
             steps {
                 sh 'docker ps'
             }
         }
 
-    }
-
-    post {
-        success {
-            echo 'Deployment successful!'
-        }
-        failure {
-            echo 'Deployment failed!'
-        }
     }
 }
