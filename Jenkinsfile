@@ -9,15 +9,15 @@ pipeline {
             }
         }
 
-        stage('Create .env file') {
+        stage('Load .env from Jenkins Credentials') {
             steps {
-                sh '''
-                cat <<EOF > .env
-DATABASE_URL=postgresql://postgres:postgres@db:5432/restaurant
-SECRET_KEY=mysecretkey
-DEBUG=True
-EOF
-                '''
+                withCredentials([file(credentialsId: 'env-file', variable: 'ENVFILE')]) {
+                    sh '''
+                        cp $ENVFILE .env
+                        echo ".env loaded successfully"
+                        ls -la
+                    '''
+                }
             }
         }
 
@@ -33,7 +33,7 @@ EOF
             }
         }
 
-        stage('Check Running Containers') {
+        stage('Verify Containers') {
             steps {
                 sh 'docker ps'
             }
