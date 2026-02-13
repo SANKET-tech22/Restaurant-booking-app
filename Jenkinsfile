@@ -5,7 +5,8 @@ pipeline {
 
         stage('Clone Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/SANKET-tech22/Restaurant-booking-app.git'
+                git branch: 'main',
+                    url: 'https://github.com/SANKET-tech22/Restaurant-booking-app.git'
             }
         }
 
@@ -23,25 +24,48 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker compose build'
+                sh '''
+                    docker compose build
+                '''
             }
         }
 
-        stage('Stop and Remove Old Containers') {
-             steps {
-                sh 'docker compose down || true'
+        stage('Force Cleanup Old Containers') {
+            steps {
+                sh '''
+                    echo "Stopping and removing old containers..."
+
+                    docker compose down || true
+
+                    docker stop restaurant-postgres || true
+                    docker rm restaurant-postgres || true
+
+                    docker stop restaurant-backend || true
+                    docker rm restaurant-backend || true
+
+                    docker stop restaurant-frontend || true
+                    docker rm restaurant-frontend || true
+
+                    echo "Cleanup completed."
+                '''
             }
-       }
+        }
 
         stage('Run Containers') {
             steps {
-                sh 'docker compose up -d'
+                sh '''
+                    echo "Starting new containers..."
+                    docker compose up -d
+                '''
             }
         }
 
         stage('Verify Containers') {
             steps {
-                sh 'docker ps'
+                sh '''
+                    echo "Running containers:"
+                    docker ps
+                '''
             }
         }
 
