@@ -9,6 +9,18 @@ pipeline {
             }
         }
 
+        stage('Create .env file') {
+            steps {
+                sh '''
+                cat <<EOF > .env
+DATABASE_URL=postgresql://postgres:postgres@db:5432/restaurant
+SECRET_KEY=mysecretkey
+DEBUG=True
+EOF
+                '''
+            }
+        }
+
         stage('Build Docker Images') {
             steps {
                 sh 'docker compose build'
