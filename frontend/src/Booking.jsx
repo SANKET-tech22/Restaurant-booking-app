@@ -46,7 +46,7 @@ function Booking() {
     <div className="container">
       <div className="card">
         <h1>🍽 Restaurant Table Booking</h1>
-        <p className="subtitle">Reserve your table in seconds</p>
+        <p className="subtitle">Reserve your table in seconds..</p>
 
         <input name="name" placeholder="Name" value={form.name} onChange={handleChange} />
         <input name="phone" placeholder="Phone" value={form.phone} onChange={handleChange} />
