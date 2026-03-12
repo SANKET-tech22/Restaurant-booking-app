@@ -3,10 +3,9 @@ pipeline {
 
     stages {
 
-        stage('Clone Code') {
+        stage('Clean Workspace') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/SANKET-tech22/Restaurant-booking-app.git'
+                cleanWs()
             }
         }
 
@@ -14,9 +13,9 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'env-file', variable: 'ENVFILE')]) {
                     sh '''
-                        cp $ENVFILE .env
+                        cp $ENVFILE $WORKSPACE/.env
                         echo ".env loaded successfully"
-                        ls -la
+                        ls -la $WORKSPACE
                     '''
                 }
             }
@@ -24,50 +23,28 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                sh '''
-                    docker-compose build
-                '''
+                sh 'docker-compose build'
             }
         }
 
-        stage('Force Cleanup Old Containers') {
+        stage('Cleanup Old Containers') {
             steps {
                 sh '''
-                    echo "Stopping and removing old containers..."
-
                     docker-compose down || true
-
-                    docker stop restaurant-postgres || true
-                    docker rm restaurant-postgres || true
-
-                    docker stop restaurant-backend || true
-                    docker rm restaurant-backend || true
-
-                    docker stop restaurant-frontend || true
-                    docker rm restaurant-frontend || true
-
-                    echo "Cleanup completed."
                 '''
             }
         }
 
         stage('Run Containers') {
             steps {
-                sh '''
-                    echo "Starting new containers..."
-                    docker-compose up -d
-                '''
+                sh 'docker-compose up -d'
             }
         }
 
         stage('Verify Containers') {
             steps {
-                sh '''
-                    echo "Running containers:"
-                    docker ps
-                '''
+                sh 'docker ps'
             }
         }
-
     }
 }
