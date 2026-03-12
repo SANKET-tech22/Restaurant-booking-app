@@ -3,19 +3,20 @@ pipeline {
 
     stages {
 
-        stage('Clean Workspace') {
+        stage('Checkout Code') {
             steps {
-                cleanWs()
+                git branch: 'main',
+                url: 'https://github.com/SANKET-tech22/Restaurant-booking-app.git'
             }
         }
 
-        stage('Load .env from Jenkins Credentials') {
+        stage('Load .env File') {
             steps {
                 withCredentials([file(credentialsId: 'env-file', variable: 'ENVFILE')]) {
                     sh '''
-                        cp $ENVFILE $WORKSPACE/.env
-                        echo ".env loaded successfully"
-                        ls -la $WORKSPACE
+                        echo "Copying .env file to workspace"
+                        cp $ENVFILE .env
+                        ls -la
                     '''
                 }
             }
@@ -23,27 +24,37 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker-compose build'
-            }
-        }
-
-        stage('Cleanup Old Containers') {
-            steps {
                 sh '''
-                    docker-compose down || true
+                    echo "Building Docker images..."
+                    docker-compose -f docker-compose.yaml build
                 '''
             }
         }
 
-        stage('Run Containers') {
+        stage('Stop Old Containers') {
             steps {
-                sh 'docker-compose up -d'
+                sh '''
+                    echo "Stopping old containers..."
+                    docker-compose -f docker-compose.yaml down || true
+                '''
             }
         }
 
-        stage('Verify Containers') {
+        stage('Start Containers') {
             steps {
-                sh 'docker ps'
+                sh '''
+                    echo "Starting containers..."
+                    docker-compose -f docker-compose.yaml up -d
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                    echo "Checking running containers..."
+                    docker ps
+                '''
             }
         }
     }
