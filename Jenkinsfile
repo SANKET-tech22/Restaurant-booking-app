@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
 
         stage('Checkout Code') {
@@ -14,9 +18,10 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'env-file', variable: 'ENVFILE')]) {
                     sh '''
-                        echo "Copying .env file to workspace"
-                        cp $ENVFILE .env
-                        ls -la
+                        echo "Copying .env file to workspace..."
+                        cp $ENVFILE $WORKSPACE/.env
+                        echo "Workspace contents:"
+                        ls -la $WORKSPACE
                     '''
                 }
             }
