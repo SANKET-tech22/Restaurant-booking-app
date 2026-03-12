@@ -25,7 +25,7 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 sh '''
-                    docker compose build
+                    docker-compose build
                 '''
             }
         }
@@ -35,7 +35,7 @@ pipeline {
                 sh '''
                     echo "Stopping and removing old containers..."
 
-                    docker compose down || true
+                    docker-compose down || true
 
                     docker stop restaurant-postgres || true
                     docker rm restaurant-postgres || true
@@ -55,7 +55,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Starting new containers..."
-                    docker compose up -d
+                    docker-compose up -d
                 '''
             }
         }
